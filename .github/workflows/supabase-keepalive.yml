@@ -2,7 +2,6 @@ name: Supabase Keep Alive - Navigator Varna
 
 on:
   schedule:
-    # Every 3 days at 08:00 UTC
     - cron: '0 8 */3 * *'
   workflow_dispatch:
 
@@ -24,19 +23,22 @@ jobs:
             exit 1
           fi
 
-          HTTP_CODE=$(curl -sS -o /dev/null -w "%{http_code}" \
+          SUPABASE_URL="${SUPABASE_URL%/}"
+
+          HTTP_CODE=$(curl -sS -o /tmp/supabase-response.txt \
+            -w "%{http_code}" \
             --connect-timeout 15 \
             --max-time 30 \
-            --retry 2 \
-            --retry-delay 5 \
             -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             "$SUPABASE_URL/rest/v1/")
 
           echo "Supabase HTTP status: $HTTP_CODE"
 
           if [ "$HTTP_CODE" != "200" ]; then
             echo "Supabase check failed"
+            cat /tmp/supabase-response.txt
             exit 1
           fi
 
-          echo "Supabase is responding"
+          echo "Supabase is responding successfully"
