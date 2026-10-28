@@ -31,7 +31,7 @@ jobs:
             --max-time 30 \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            "$SUPABASE_URL/rest/v1/")
+           "$SUPABASE_URL/rest/v1/keep_alive?select=id&limit=1"
 
           echo "Supabase HTTP status: $HTTP_CODE"
 
